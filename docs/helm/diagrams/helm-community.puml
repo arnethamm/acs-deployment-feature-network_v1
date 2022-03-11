@@ -1,0 +1,61 @@
+@startuml
+
+Title: ACS Helm Community Deployment
+
+skinparam componentStyle uml2
+skinparam linetype ortho
+skinparam rectangle {
+    BorderStyle dashed
+    FontSize 15
+    FontStyle none
+}
+
+actor Client
+
+node "alfresco namespace" {
+    component "NGINX ingress-controller" as nginx #lightgrey
+    component "Alfresco Content Services" as acs #lightgrey
+    component "Alfresco Search Services" as ass #lightgrey
+    component "Alfresco Sync Service" as sync #lightgrey
+    component "PostgreSQL" as psql #lightgrey
+    component "Alfresco Share" as share #lightgrey
+    component "ActiveMQ" as amq #lightgrey
+    database "Volume Claim" as vc
+    rectangle "Alfresco Transform Service" {
+        ' component "Transform Router" as tr #lightgrey
+        ' component "Shared File Store" as sfs #lightgrey
+        component "Alfresco PDF Renderer" as pdfr #lightgrey
+        component "LibreOffice" as libr #lightgrey
+        component "ImageMagick" as img #lightgrey
+        component "Tika" as tika #lightgrey
+        component "TransformMisc" as misc #lightgrey
+    }
+}
+
+Client --> nginx
+
+nginx --> acs
+nginx --> share
+
+acs --> vc
+ass --> vc
+psql --> vc
+
+ass <-left-> acs
+acs --> psql
+acs --> pdfr
+acs --> libr
+acs --> img
+acs --> tika
+acs --> misc
+acs <--> amq
+
+share --> acs
+
+sync <-left-> acs
+sync --> psql
+sync --> amq
+
+center footer Copyright 2021 Alfresco Software Inc
+
+@enduml
